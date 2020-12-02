@@ -355,3 +355,79 @@ Box.test(ModL3$residuals, type = "Ljung-Box", lag = 12) # bruit blanc
 ##Mêmes remarques
 
 ### Comparaison sur un critère prédictif
+
+BeerT = BeerProd[1:(n-12)]
+TpsT = Tps[1:(n-12)]
+Tps2T = TpsT^2
+NTps = Tps[(n-11):n]
+NTps2 = NTps^2
+XT = X[1:(nT-12)]
+
+Mod1T = Arima(BeerT, order = c(4,1,4), seasonal = list(order=c(0,1,2), period =12))
+Mod2T = Arima(BeerT, order = c(4,0,4), seasonal = list(order=c(0,1,2), period=12), xreg = cbind(TpsT,Tps2T))
+Mod3T = Arima(XT, order = c(4,1,3), seasonal = list(order=c(1,1,1), period =12))
+
+pred1T = forecast(Mod1T, h=12)$mean
+pred2T = forecast(Mod2T, h=12, xreg = cbind(NTps,NTps2))$mean
+pred3T = forecast(Mod3T, h=12)$mean
+
+BeerProd_DP = BeerProd[(n-11):n]
+plot(BeerProd_DP, type = 'l')
+lines(as.numeric(pred1T), type = 'l', col = 'red')
+lines(as.numeric(pred2T), type = 'l', col = 'blue')
+lines(as.numeric(pred3T), type = 'l', col = 'green')
+
+LBeerT = LBeerProd[1:(n-12)]
+XLT = XL[1:(nT-12)]
+
+ModL1T = Arima(LBeerT, order = c(4,1,4), seasonal = list(order=c(1,1,2), period =12))
+ModL2T = Arima(LBeerT, order = c(4,0,4), seasonal = list(order=c(0,1,2), period=12), xreg = cbind(TpsT,Tps2T))
+ModL3T = Arima(XLT, order = c(4,0,4), seasonal = list(order=c(1,1,1), period =12))
+
+predL1T = forecast(ModL1T, h=12)$mean
+predL2T = forecast(ModL2T, h=12, xreg = cbind(NTps,NTps2))$mean
+predL3T = forecast(ModL3T, h=12)$mean
+
+LBeerProd_DP = LBeerProd[(n-11):n]
+plot(LBeerProd_DP, type = 'l')
+lines(as.numeric(predL1T), type = 'l', col = 'red')
+lines(as.numeric(predL2T), type = 'l', col = 'blue')
+lines(as.numeric(predL3T), type = 'l', col = 'green')
+
+#Calcul de l'erreur MSE pour chaque série (log et non log)
+
+MSE1 = sum((BeerProd_DP - pred1T)^2)/12 ; MSE1
+MSE2 = sum((BeerProd_DP - pred2T)^2)/12 ; MSE2 # meilleur
+MSE3 = sum((BeerProd_DP - pred3T)^2)/12 ; MSE3
+
+MSE4 = sum((LBeerProd_DP - predL1T)^2)/12 ; MSE4
+MSE5 = sum((LBeerProd_DP - predL2T)^2)/12 ; MSE5
+MSE6 = sum((LBeerProd_DP - predL3T)^2)/12 ; MSE6 # meilleur
+
+## --> on garde donc deux modèles : un modèle log qui est le modèle ModL3 et un modèle non log
+## qui est le modèle Mod2
+## on comparera ces deux modèles sur leur intervalles de prédiction 
+
+###Prédictions et intervalles de confiance
+
+NTs = 477:512
+NTs2 = NTps^2
+corr = mean(exp(ModL3$residuals))
+
+pred1 = forecast(Mod2, h=36, xreg=cbind(NTs,NTs2))
+predL2 = forecast(ModL3, h=36)
+pred2 = exp(predL2$mean)*corr
+
+plot(BeerProd, xlim=c(1,512), type='l')
+lines(NTs, pred1$mean, type = 'l', col='blue')
+lines(NTs, pred2, col='red')
+plot(1:36, pred1$lower[,2], type = 'l', col='cyan', ylim =c(100,220))
+lines(1:36, pred1$upper[,2], type = 'l', col='cyan')
+lines(1:36, exp(predL2$upper[,2]), col='orange')
+lines(1:36, exp(predL2$lower[,2]), col='orange')
+
+##Au vu de la taille des intervalles de prédiction, le modèle sans passage au log semble meilleur
+
+##A affiner : 1. Comment gérer la non normalité des résidus quand pas de passage au log ?
+##            2. polygone pour affichage des prédictions (jolie)
+##            3. Titres aux graphiques et réagencement pour en avoir plusieurs sur un même
