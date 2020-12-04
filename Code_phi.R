@@ -80,7 +80,7 @@ kpss.test(BeerProd_diff12d)
 auto.arima(ts(BeerProd, frequency = 12), d=1, D=1, ic='bic', allowdrift = T)
 #SARIMA (0,1,3)x(0,1,2)[12] 
 
-Mod1 = Arima(BeerProd, order = c(4,1,4), seasonal = list(order=c(0,1,2), period =12))
+Mod1 = Arima(BeerProd, order = c(4,1,4), seasonal = list(order=c(0,1,1), period =12))
 ###SARIMA (.,1,.)x(.,1,1)[12] --> pas de modèle qui convient
 
 ## 2ème approche : on prend en compte une variable endogène extérieure (SARIMAX)
@@ -110,7 +110,7 @@ ResRegQ = ts(RegQ$residuals, frequency = 12)
 auto.arima(ResRegQ, allowmean = T, allowdrift = T, ic='bic')
 #SARIMA (2,0,2)x(0,1,2)[12]
 
-Mod2 = Arima(BeerProd, order = c(4,0,4), seasonal = list(order=c(0,1,2), period=12), xreg = cbind(Tps,Tps2))
+Mod2 = Arima(BeerProd, order = c(4,0,4), seasonal = list(order=c(0,1,1), period=12), xreg = cbind(Tps,Tps2))
 
 
 ##3ème approche : rupture (en tendance)
@@ -153,10 +153,10 @@ abline(RL2, col='blue')
 X = X2
 nT = length(X)
 
-auto.arima(ts(X, frequency = 12), allowdrift = T, seasonal = T, ic='bic')
+auto.arima(ts(X, frequency = 12),d=1, allowdrift = T, seasonal = T, ic='bic')
 #SARIMA (0,0,0)x(1,1,1)[12]
 
-Mod3 = Arima(X, order = c(4,1,3), seasonal = list(order=c(1,1,1), period =12))
+Mod3 = Arima(X, order = c(4,1,3), seasonal = list(order=c(0,1,1), period =12))
 
 ## Première visualisation de la qualité des modèles 
 
@@ -170,9 +170,8 @@ Box.test(Mod1$residuals, type = "Ljung-Box", lag = 12) # bruit blanc
 # lines(Mod1$fitted - 1.96*sqrt(Mod1$sigma2), lty = 2, col = 'blue')
 # lines(Mod1$fitted + 1.96*sqrt(Mod1$sigma2), lty = 2, col = 'blue')
 
-##Pourquoi ne prédit pas jusqu'à la fin ?
 ##Les grands pics ne sont pas forcément bien modélisés
-##Les résidus sont constants au début --> pb ...
+
 
 #Modèle 2
 dev.off()
@@ -245,7 +244,7 @@ kpss.test(LBeerProd_diff12d)
 auto.arima(ts(LBeerProd, frequency = 12), d=1, D=1, ic='bic', allowdrift = T)
 #SARIMA (2,1,2)x(1,1,2)[12] 
 
-ModL1 = Arima(LBeerProd, order = c(4,1,4), seasonal = list(order=c(1,1,2), period =12))
+ModL1 = Arima(LBeerProd, order = c(3,1,4), seasonal = list(order=c(0,1,1), period =12))
 ###SARIMA (.,1,.)x(.,1,1)[12] --> pas de modèle qui convient
 
 ## 2ème approche : on prend en compte une variable endogène extérieure (SARIMAX)
@@ -272,7 +271,7 @@ ResRegLQ = ts(RegLQ$residuals, frequency = 12)
 auto.arima(ResRegLQ, allowmean = T, allowdrift = T, ic='bic')
 #SARIMA (0,0,0)(0,1,2)[12] 
 
-ModL2 = Arima(LBeerProd, order = c(4,0,4), seasonal = list(order=c(0,1,2), period=12), xreg = cbind(Tps,Tps2))
+ModL2 = Arima(LBeerProd, order = c(4,0,4), seasonal = list(order=c(0,1,1), period=12), xreg = cbind(Tps,Tps2))
 
 
 ##3ème approche : rupture (en tendance)
@@ -317,7 +316,7 @@ XL = X2L
 auto.arima(ts(XL, frequency = 12), allowdrift = T, seasonal = T, ic='bic')
 #SARIMA (0,0,0)x(1,1,1)[12]
 
-ModL3 = Arima(XL, order = c(4,0,4), seasonal = list(order=c(1,1,1), period =12))
+ModL3 = Arima(XL, order = c(4,0,4), seasonal = list(order=c(0,1,1), period =12))
 
 ## Première visualisation de la qualité des modèles 
 
@@ -331,10 +330,6 @@ Box.test(ModL1$residuals, type = "Ljung-Box", lag = 12) # bruit blanc
 # lines(Mod1$fitted - 1.96*sqrt(Mod1$sigma2), lty = 2, col = 'blue')
 # lines(Mod1$fitted + 1.96*sqrt(Mod1$sigma2), lty = 2, col = 'blue')
 
-##Pourquoi ne prédit pas jusqu'à la fin ?
-##Les grands pics ne sont pas forcément bien modélisés
-##Les résidus sont constants au début --> pb ...
-
 #Modèle L2
 dev.off()
 plot(LBeerProd, type='l',lwd = 1)
@@ -342,7 +337,7 @@ lines(ModL2$fitted, col = 'red')
 checkupRes(ModL2$residuals)
 shapiro.test(ModL2$residuals) #on rejette le caractère gaussien des résidus
 Box.test(ModL2$residuals, type = "Ljung-Box", lag = 12) # bruit blanc
-##Mêmes remarques
+
 
 #Modèle L3
 dev.off()
@@ -351,7 +346,7 @@ lines(ModL3$fitted, col = 'red')
 checkupRes(ModL3$residuals)
 shapiro.test(ModL3$residuals) # pas gaussien
 Box.test(ModL3$residuals, type = "Ljung-Box", lag = 12) # bruit blanc
-##Mêmes remarques
+
 
 ### Comparaison sur un critère prédictif
 
@@ -362,9 +357,9 @@ NTps = Tps[(n-11):n]
 NTps2 = NTps^2
 XT = X[1:(nT-12)]
 
-Mod1T = Arima(BeerT, order = c(4,1,4), seasonal = list(order=c(0,1,2), period =12))
-Mod2T = Arima(BeerT, order = c(4,0,4), seasonal = list(order=c(0,1,2), period=12), xreg = cbind(TpsT,Tps2T))
-Mod3T = Arima(XT, order = c(4,1,3), seasonal = list(order=c(1,1,1), period =12))
+Mod1T = Arima(BeerT, order = c(4,1,4), seasonal = list(order=c(0,1,1), period =12))
+Mod2T = Arima(BeerT, order = c(4,0,4), seasonal = list(order=c(0,1,1), period=12), xreg = cbind(TpsT,Tps2T))
+Mod3T = Arima(XT, order = c(4,1,3), seasonal = list(order=c(0,1,1), period =12))
 
 pred1T = forecast(Mod1T, h=12)$mean
 pred2T = forecast(Mod2T, h=12, xreg = cbind(NTps,NTps2))$mean
@@ -379,9 +374,9 @@ lines(as.numeric(pred3T), type = 'l', col = 'green')
 LBeerT = LBeerProd[1:(n-12)]
 XLT = XL[1:(nT-12)]
 
-ModL1T = Arima(LBeerT, order = c(4,1,4), seasonal = list(order=c(1,1,2), period =12))
-ModL2T = Arima(LBeerT, order = c(4,0,4), seasonal = list(order=c(0,1,2), period=12), xreg = cbind(TpsT,Tps2T))
-ModL3T = Arima(XLT, order = c(4,0,4), seasonal = list(order=c(1,1,1), period =12))
+ModL1T = Arima(LBeerT, order = c(3,1,4), seasonal = list(order=c(0,1,1), period =12))
+ModL2T = Arima(LBeerT, order = c(4,0,4), seasonal = list(order=c(0,1,1), period=12), xreg = cbind(TpsT,Tps2T))
+ModL3T = Arima(XLT, order = c(4,0,4), seasonal = list(order=c(0,1,1), period =12))
 
 predL1T = forecast(ModL1T, h=12)$mean
 predL2T = forecast(ModL2T, h=12, xreg = cbind(NTps,NTps2))$mean
