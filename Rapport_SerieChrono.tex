@@ -1,0 +1,174 @@
+\documentclass[12pt,a4paper]{book}
+
+\setcounter{tocdepth}{3}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{url}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{dsfont}
+\usepackage{amssymb}
+
+\usepackage{comment}
+
+\usepackage{amsthm}
+\newtheorem{env_definition}{Définition}
+\newtheorem{formule}{Formule}
+\newtheorem{annexe}{Annexe}
+
+\usepackage[colored]{shadethm}
+\definecolor{shadethmcolor}{rgb}{1,0.871,0.890}% couleur du fond
+\definecolor{shaderulecolor}{rgb}{0.651,0.074,0.090}% couleur de l'encadré
+\newshadetheorem{env_proposition}{Proposition}
+\newshadetheorem{env_lemme}{Lemme}
+\newshadetheorem{theorem}{Théorème}
+
+\newcommand{\R}{\mathbb{R}}
+
+\renewcommand\thesection{\Roman{section}}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\p}{\mathbb{P}}
+\newcommand{\1}{\mathds{1}}
+
+\DeclareMathOperator*{\argmin}{arg\!\min}
+
+
+\usepackage{pythonhighlight}
+%\usepackage[margin=0.5in]{geometry}
+\usepackage{color, colortbl}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{caption}
+
+
+\definecolor{Gray}{gray}{0.9}
+\definecolor{DarkGray}{gray}{0.5}
+\definecolor{LightCyan}{rgb}{0.88,1,1}
+\definecolor{yellow}{rgb}{1,1,0}
+
+\begin{document}
+
+
+
+% Page de garde
+	
+\begin{titlepage}
+	\thispagestyle{empty}
+	\begin{center}
+	
+    \includegraphics[scale=1.]{Logo}  
+	\vspace{1 cm}
+
+	
+	\vspace{0.7 cm}
+	\textbf{{\fontsize{26}{34} \selectfont Prédiction de la Production de Bière en Australie }}\\
+	\vspace{1 cm}
+	 
+	
+	\vspace{1.5 cm}
+	{\fontsize{15}{25} \selectfont Par : \\
+		\item Philippine RENAUDIN
+		\item Elvina EURY
+	}\\
+	\vspace{0.5 cm}
+	{\fontsize{15}{25} \selectfont Master 2 Mathématiques et Applications}\\
+	{\fontsize{15}{25} \selectfont Parcours Data Science}\\
+	\vspace{1 cm}
+	{\fontsize{10}{25} \selectfont Sous la direction de M. Frédéric Proia}
+	\vspace{1.5 cm}
+
+	{\fontsize{20}{30} \selectfont 2020-2021}\\
+	
+	\end{center}
+\end{titlepage}
+
+\thispagestyle{empty}
+\newpage
+
+
+% Table des matières
+
+
+% Description du sujet
+
+\newpage
+\setcounter{page}{1}
+
+\noindent
+{\LARGE \textbf{Introduction}}
+\vspace{5 mm}
+
+%===============================================================================
+
+L'objectif de cet étude est de prédire la production de bière en Australie pour les trois prochaines années à partir de séries chronologiques. La production de bière est une variable endogène car elle est dépendante de d'autres facteurs comme le climat. Nous nous basons sur des données mensuelles, de janvier 1956 à août 1995. Comme il est difficile de visuellement discerner le modèle multiplicatif de l'additif nous analysons à la fois le modèle initial et le modèle transformée. Notre approche de vise en premier lieu à transformer les données, à éliminer la périodicité et la tendance avant de rendre le processus stationnaire. Puis des tests statistiques sont effectués sur les résidus afin de cibler les modèles les plus robustes. Finalement, nous utilisons les modèles choisis afin de prédire la production de bière sur les trois prochaines années. 
+A COMPLETER/ MODIFIER...
+
+
+\vspace{15 mm}
+
+%===============================================================================
+
+\noindent
+{\LARGE \textbf{Méthologie}}
+\vspace{5 mm}
+
+
+\subsection{Analyse initiale}
+
+Les séries chronologiques ont 3 composantes principales: La tendance (T), qui décrit les mouvement à long terme, la périodicité (S), qui est cyclique, et les fluctuations ($\epsilon$).
+
+\vspace{5 mm}
+Nous débutons notre approche en faisant une analyse visuelle des séries chronologiques.
+
+\begin{center}
+	
+    \includegraphics[scale=0.4]{plot_beer}  
+	\vspace{1 cm}
+	
+\end{center}
+
+À première vue nous voyons que nos séries sont non-stationnaire avec une tendance et une périodicité annuelle. Cette dernière est d'ailleurs confirmé sur les sorties ACF et PACF des séries initiales. Il est dur à dire si la tendance est quadratique ou linéaire. Nous nous baserons sur des tests supplémentaires pour être sûr.  De plus, nous remarquons un accroissement subtile de la saisonnalité, nous laissant un doute quant à la nature multiplicative ou additive du modèle. Nous avons ainsi décidé de comparer les résultats obtenus des séries initiales, avec les résultats du logarithme des séries. 
+
+
+\vspace{5 mm}
+\subsection{Élimination de la tendance et de la saisonnalité --MEILLEUR TITRE?}
+
+\vspace{5 mm}
+À partir de ces deux modèles, nous commencons par faire une différenciation $(I-B)$, soit d=1. Les sorties ACF et PACF nous affiche des pics à 12, 24, et plus, nous poussant à faire une prochaine différenciation, $(I-B^{12})$, soit D=1. Nous prenons ainsi les cas de différenciation suivants:
+\begin{description}
+  \item 1. d=0, D=1
+  \item 2. d=1, D=1
+\end{description}
+\noindent 
+Pour le premier cas, la série est non-stationnaire, tandis que lorsque nous prenons d=1 et D=1, nous obtenons une série stationnaire, un résultat qui est vu à la fois via les sorties ACF, PACF et à la fois grâce aux tests ADF et KPSS. Nous établirons nos prochains modèles à partir de $Y_t$ (cas non-transformé) et $YL_t$ (cas transformé)
+
+\noindent 
+Soit $(X_t)_{t\in \mathbb{Z}}$ le processus initial
+\begin{align*}
+Y_t &= (I-B) * (1-B^{12}) * X_t \\ 
+YL_t &= (I-B) * (1-B^{12}) * log(X_t)
+\end{align*}
+
+
+
+\vspace{5 mm}
+\subsection{Création de modèles}
+
+\vspace{5 mm}
+\subsubsection{Processus $Y_t$}
+
+Nous utilisons 3 approches pour modéliser notre processus $Y_t$:
+1. Nous utilisons la fonction auto.arima sur le modèle SARIMA afin de
+
+
+
+
+
+
+\end{document}
