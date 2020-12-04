@@ -202,10 +202,10 @@ acf(LBeerProd, lag.max = 40)
 pacf(LBeerProd, lag.max = 40)
 ##périodique de période 12, tendance linéaire ou quadratique, rupture ?
 
-LBeerProd_diff = diff(BeerProd) # d=1, D=0
-LBeerProd_diff2 = diff(diff(BeerProd)) # d=2, D=0
-LBeerProd_diff12 = diff(BeerProd, 12) # d=0, D=1
-LBeerProd_diff12d = diff(diff(BeerProd, 12)) # d=1, D=1
+LBeerProd_diff = diff(LBeerProd) # d=1, D=0
+LBeerProd_diff2 = diff(diff(LBeerProd)) # d=2, D=0
+LBeerProd_diff12 = diff(LBeerProd, 12) # d=0, D=1
+LBeerProd_diff12d = diff(diff(LBeerProd, 12)) # d=1, D=1
 
 plot(LBeerProd_diff, type='l') #plus de tendance, encore un peu de périodicité
 acf(LBeerProd_diff, lag.max = 40) #pics à 12, 24, 36--> encore de la périodicité
@@ -213,8 +213,8 @@ pacf(LBeerProd_diff, lag.max = 40) #partie AR importante
 
 adf.test(LBeerProd_diff)
 kpss.test(LBeerProd_diff)
-#Cette série semble stationnaire même si à vu d'oeil la variance est trop changeante..
-#Douteux, peu aller plus loin pour se défaire de la périodicité
+#Cette série semble stationnaire 
+#par contre on a de la périodicité
 
 plot(LBeerProd_diff2, type='l') #plus de tendance, plus trop de périodicité
 acf(LBeerProd_diff2, lag.max = 40) #pics à 12,4,36 --> encore de la périodicité
@@ -222,8 +222,7 @@ pacf(LBeerProd_diff2, lag.max = 40) #pics à 12 et 24 + partie AR importante
 
 adf.test(LBeerProd_diff2)
 kpss.test(LBeerProd_diff2)
-#Cette série semble stationnaire même si à vu d'oeil la variance est trop changeante..
-#Douteux, peu aller plus loin pour se défaire de la périodicité
+#Cette série semble stationnaire mais toujours de la périodicité
 
 plot(LBeerProd_diff12, type='l') #plus trop de tendance, plus trop de périodicité
 acf(LBeerProd_diff12, lag.max = 40) #pics à 12 --> encore de la périodicité (?) ou peut-être différencier en local, partie MA importante
