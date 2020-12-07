@@ -8,6 +8,8 @@
 \usepackage{graphicx}
 \usepackage{fullpage}
 \usepackage{url}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -122,18 +124,30 @@ A COMPLETER/ MODIFIER...
 \subsection{Analyse initiale}
 
 Les séries chronologiques ont 3 composantes principales: La tendance (T), qui décrit les mouvement à long terme, la périodicité (S), qui est cyclique, et les fluctuations ($\epsilon$).
-
 \vspace{5 mm}
-Nous débutons notre approche en faisant une analyse visuelle des séries chronologiques.
-
-\begin{center}
-	
-    \includegraphics[scale=0.4]{plot_beer}  
-	\vspace{1 cm}
-	
-\end{center}
+Nous débutons notre approche en faisant une analyse visuelle des séries chronologiques. 
 
 À première vue nous voyons que nos séries sont non-stationnaire avec une tendance et une périodicité annuelle. Cette dernière est d'ailleurs confirmé sur les sorties ACF et PACF des séries initiales. Il est dur à dire si la tendance est quadratique ou linéaire. Nous nous baserons sur des tests supplémentaires pour être sûr.  De plus, nous remarquons un accroissement subtile de la saisonnalité, nous laissant un doute quant à la nature multiplicative ou additive du modèle. Nous avons ainsi décidé de comparer les résultats obtenus des séries initiales, avec les résultats du logarithme des séries. 
+
+\begin{figure}[h]
+	\begin{subfigure}{.5\textwidth}
+  		\centering
+    	\includegraphics[scale=0.4]{plot_beer}  
+    	\caption{Série Initiale}
+    	\label{fig:sub1}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\includegraphics[scale=0.3]{Log_Series}  
+    	\caption{Série avec une transformation logarithme}
+    	\label{fig:sub2}
+    \end{subfigure}
+
+\caption{Comparaison série initiale et avec transformation logarithmique}
+\label{fig:test}
+   
+\end{figure}
+
 
 
 \vspace{5 mm}
@@ -161,11 +175,53 @@ YL_t &= (I-B) * (1-B^{12}) * log(X_t)
 \subsection{Création de modèles}
 
 \vspace{5 mm}
-\subsubsection{Processus $Y_t$}
+\subsubsection{Série Initial, $(Y_t)$)}
 
-Nous utilisons 3 approches pour modéliser notre processus $Y_t$:
-1. Nous utilisons la fonction auto.arima sur le modèle SARIMA afin de
+Nous utilisons 3 approches pour modéliser notre processus $Y_t$.
 
+La première est une approche standard, qui permet de déterminer les p, q et P, Q qui minimiseraient le BIC. En effet, grâce à la fonction auto.arima de R nous obtenons en premier lieu SARIMA (0,1,3) X (0,1,2)[12]. Cela veut dire que notre modèle est de la forme suivante:
+\begin{align*}
+\theta ....ECRIRE LE MODELE
+\end{align*}
+
+Puis nous tentons de développer un autre modèle potentiel. Comme notre série semble avoir une tendance quadratique, de part sa forme concave, nous considérons une nouvelle approche qui pourrait traiter la possibilité d'endogénéité de la variable production de bière. Ainsi nous supposons que la variable pourrait être dépendante de d'autres facteurs tel que le climat. Nous créons alors le modèle SARIMAX qui est de la forme suivante:
+\begin{align*}
+\theta ....ECRIRE LE MODELE
+\end{align*}
+
+La dernière approche utilisée dans cet étude est la recherche du point de rupture. Tout comme pour la deuxième approche nous choisissons cette méthode à cause de la tendance de la série. Le modèle choisit par auto.arima est :
+\begin{align*}
+\theta ....ECRIRE LE MODELE
+\end{align*}
+
+Avant d'aller plus loin dans la comparaison des modèles, il est important de valider la qualité des résidus des modèles créés. Or, nous remarquons que bien qu'auto.arima ait sélectionné les modèles qui minimise le BIC, il ne semble pas considérer la qualité des résidus. En effet, le test de Box Jenkins nous montre que les résidus ne sont pas bruits blancs et qu'au final les modèles ne sont pas adaptés à faire les prévisions. Afin de palier à ce problème nous cherchons alors à augmenter manuellement les valeurs de p, q ainsi P et Q ce qui nous donnerait plus de flexibilité dans le modèle mais qui augmenterait le risque de paramètres non significatifs. Ainsi, pour chaque modèle créé nous effectuons un test statistique de student sur chaque coefficient. Dans chaque cas où les coefficients les plus (ELEVER-- A VALIDER QUEL TERME METTRE) sont non significatifs, une variante du modèle, ne possédant aucune variable significative est créée. Le BIC de cette dernière est comparé à celui du modèle possédant les paramètres non significatifs. Nous nous retrouvons avec les modèles suivants:
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Modèles choisis}
+    \label{tab:table1}
+    \begin{tabular}{l|c|r} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
+      \ & \textbf{Modèles} & \textbf{Equations}\\
+      \hline
+      1 & SARIMA $(4,1,4)(0,1,1)_{12}$ & $\alpha$ - à compléter\\
+      2 & SARIMAX $(4,0,4)(0,1,1)_{12}$& $\beta$ - à compléter\\
+      3 & SARIMA avec rupture $(4,1,3)(0,1,1)_{12}$ & $\gamma$ - à compléter\\
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+
+\vspace{5 mm}
+\subsubsection{Série avec transformation logarithmique, $(YL_t)$)}
+
+Nous procédons de la même façon avec le modèle logarithmique. 
+
+
+\vspace{5 mm}
+\subsection{Analyses des résidus}
+Test de bruit blanc
+Test de normalité
 
 
 
