@@ -144,7 +144,7 @@ Nous débutons notre approche en faisant une analyse visuelle des séries chrono
     \end{subfigure}
 
 \caption{Comparaison série initiale et avec transformation logarithmique}
-\label{fig:test}
+\label{fig:1}
    
 \end{figure}
 
@@ -175,7 +175,7 @@ YL_t &= (I-B) * (1-B^{12}) * log(X_t)
 \subsection{Création de modèles}
 
 \vspace{5 mm}
-\subsubsection{Série Initial, $(Y_t)$)}
+\subsubsection{Série Initial, $Y_t$)}
 
 Nous utilisons 3 approches pour modéliser notre processus $Y_t$.
 
@@ -213,18 +213,39 @@ Avant d'aller plus loin dans la comparaison des modèles, il est important de va
 
 
 \vspace{5 mm}
-\subsubsection{Série avec transformation logarithmique, $(YL_t)$)}
+\subsubsection{Série avec transformation logarithmique, $YL_t$)}
 
-Nous procédons de la même façon avec le modèle logarithmique. 
+Nous procédons de la même façon avec le modèle logarithmique. Tout comme pour la série initiale, en faisant une différenciation, $(I-B)$ et en faisant une différenciation saisonnière $(I-B^{12})$, nous obtenons une modèle stationnaire. Le test ADF et KPSS confirme ce résultat tout comme les sorties ACF et PACF (qui nous n'affiche plus de pics cycliques). 
 
+\begin{figure}[h]
+ \centering
+  \includegraphics[scale=0.3]{Log_Avecd1D1}  
+\caption{Séries logarithmique avec des différenciations, d=1, D=1 }
+\label{fig:1}
+\end{figure}
+
+Dans la Figure 2, nous remarquons que la variance n'est pas tout à fait constante. En effet, elle est plus élevée autours des périodes 20 et 30. 
 
 \vspace{5 mm}
 \subsection{Analyses des résidus}
-Test de bruit blanc
-Test de normalité
+Avant de faire des prédictions avec nos modèles nous cherchons à analyser les résidus. Pour cela nous allons faire à la fois une analyse visuelle et une analyse en se basant sur les tests statistiques afin de voir si nos résidus sont bien des bruits blanc et s'ils sont gaussiens.
+
+\subsubsection{Modèle Initial, $Y_t$}
+
+METTRE PHOTOS CHECK UP RES DU RESULTAT CONCLUANT
+
+\subsubsection{Modèle Initial, $YL_t$}
+
+METTRE PHOTOS CHECK UP RES DU RESULTAT CONCLUANT
+
+\vspace{5 mm}
+\subsection{Prédictions}
 
 
 
 
+
+\vspace{5 mm}
+\subsection{Conclusion}
 
 \end{document}
