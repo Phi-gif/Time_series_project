@@ -132,7 +132,7 @@ Nous débutons notre approche en faisant une analyse visuelle des séries chrono
 \begin{figure}[h]
 	\begin{subfigure}{.5\textwidth}
   		\centering
-    	\includegraphics[scale=0.4]{plot_beer}  
+    	\includegraphics[scale=0.2]{plot_beer}  
     	\caption{Série Initiale}
     	\label{fig:sub1}
     \end{subfigure}
@@ -189,7 +189,27 @@ Puis nous tentons de développer un autre modèle potentiel. Comme notre série 
 \theta ....ECRIRE LE MODELE
 \end{align*}
 
-La dernière approche utilisée dans cet étude est la recherche du point de rupture. Tout comme pour la deuxième approche nous choisissons cette méthode à cause de la tendance de la série. Le modèle choisit par auto.arima est :
+La dernière approche utilisée dans cet étude est la recherche du point de rupture. 
+\begin{figure}[h]
+	\begin{subfigure}{.5\textwidth}
+  		\centering
+    	\includegraphics[scale=0.2]{rupture1}  
+    	\caption{Partie à gauche de la rupture}
+    	\label{fig:sub1}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\includegraphics[scale=0.2]{rupture2}  
+    	\caption{Partie à droite de la rupture}
+    	\label{fig:sub2}
+    \end{subfigure}
+
+\caption{Analyse point de rupture}
+\label{fig:1}
+   
+\end{figure}
+
+Tout comme pour la deuxième approche nous choisissons cette méthode à cause de la tendance de la série. Nous voyons en effet, un point de rupture possible autour de 1970. Le modèle choisit par auto.arima est :
 \begin{align*}
 \theta ....ECRIRE LE MODELE
 \end{align*}
