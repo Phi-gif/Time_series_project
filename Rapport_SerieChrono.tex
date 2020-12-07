@@ -223,9 +223,9 @@ Avant d'aller plus loin dans la comparaison des modèles, il est important de va
     \begin{tabular}{l|c|r} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
       \ & \textbf{Modèles} & \textbf{Equations}\\
       \hline
-      1 & SARIMA $(4,1,4)(0,1,1)_{12}$ & $\alpha$ - à compléter\\
-      2 & SARIMAX $(4,0,4)(0,1,1)_{12}$& $\beta$ - à compléter\\
-      3 & SARIMA avec rupture $(4,1,3)(0,1,1)_{12}$ & $\gamma$ - à compléter\\
+      A & SARIMA $(4,1,4)(0,1,1)_{12}$ & $\alpha$ - à compléter\\
+      B & SARIMAX $(4,0,4)(0,1,1)_{12}$& $\beta$ - à compléter\\
+      C & SARIMA avec rupture $(4,1,3)(0,1,1)_{12}$ & $\gamma$ - à compléter\\
     \end{tabular}
   \end{center}
 \end{table}
@@ -252,18 +252,68 @@ Avant de faire des prédictions avec nos modèles nous cherchons à analyser les
 
 \subsubsection{Modèle Initial, $Y_t$}
 
-METTRE PHOTOS CHECK UP RES DU RESULTAT CONCLUANT
+METTRE PHOTOS CHECK UP RES du modèle avec meilleur résultat
 
-\subsubsection{Modèle Initial, $YL_t$}
+\subsubsection{Modèle logarithme, $YL_t$}
 
-METTRE PHOTOS CHECK UP RES DU RESULTAT CONCLUANT
+METTRE PHOTOS CHECK UP RES du modèle avec meilleur résultat
 
 \vspace{5 mm}
 \subsection{Prédictions}
 
+Nous cherchons maintenant à analyser la performance prédictive des modèles sur 1 an ATTENTION PREDICTION 3 ANS demandé dans le mail?. Pour le faire, une période, équivalente à 12 mois, est enlevée à partir d'août 1995. Les résultats ainsi prédits seront comparés avec les observations en utilisant le MSE, l'erreur moyenne au carré. Le modèle ayant le plus petit MSE sera le modèle sélectionné dans chacun des cas (avec et sans transformation logarithme). 
 
 
+\subsubsection{Modèle Initial, $Y_t$}
 
+Figure 4 nous affiche à la fois les prédictions des 12 derniers mois et les vrais valeurs (en noir). Nous remarquons que les 3 modèles donnent visuellement des résultats assez proche des vrais observations. Nous confirmons cela à l'aide des MSE calculés (Table 2). Nous pouvoir établir que le modèle 
+
+\begin{figure}[h]
+  		\centering
+    	\includegraphics[scale=0.4]{Prediction_Initial}  
+\caption{Prédictions des 12 derniers mois et comparaison avec les vrai valeurs à partir de la série non-transformée}
+\label{fig:1}
+\end{figure}
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{MSE}
+    \label{tab:table1}
+    \begin{tabular}{l|c|r} 
+      \ & \textbf{Modèles} & \textbf{MSE}\\
+      \hline
+      A & SARIMA $(4,1,4)(0,1,1)_{12}$ & 69.82345\\
+      \rowcolor{LightCyan}
+      B & SARIMAX $(4,0,4)(0,1,1)_{12}$& \textbf{66.83503}\\
+      C & SARIMA avec rupture $(4,1,3)(0,1,1)_{12}$ & 77.87975\\
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+\subsubsection{Modèle logarithme, $YL_t$}
+Les résultats obtenus à partir des logarithmes de la séries sont affichés dans la figure 5. 
+\begin{figure}[h]
+  		\centering
+    	\includegraphics[scale=0.4]{Prediction_Log}  
+\caption{Prédictions des 12 derniers mois et comparaison avec les vrai valeurs à partir de la série transformée}
+\label{fig:1}
+\end{figure}
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{MSE}
+    \label{tab:table1}
+    \begin{tabular}{l|c|r} 
+      \ & \textbf{Modèles} & \textbf{MSE}\\
+      \hline
+      D & SARIMA A AJOUTER & 0.003685328\\
+      E & SARIMAX A AJOUTER & 0.003874816\\
+      \rowcolor{LightCyan}
+      F & SARIMA avec rupture A AJOUTER & \textbf{0.003226944}\\
+    \end{tabular}
+  \end{center}
+\end{table}
 
 \vspace{5 mm}
 \subsection{Conclusion}
