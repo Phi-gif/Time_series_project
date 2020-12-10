@@ -6,15 +6,53 @@ library(TSA)
 
 library(caschrono)
 
+library(dplyr)
+library(readr)
+
+library(dygraphs)
+library(xts)
+library(lubridate)
+library(TSstudio)
+
+# Nouveau librairies pour les graphiques
+library(fpp3)         # A newer tidy forecasting framework
+library(timetk)       # An even newer tidy forecasting framework
+library(tidyverse)    # Collection of data manipulation tools
+library(tidyquant)    # Business Science ggplot theme
+library(cowplot)      # A ggplot add-on for arranging plots
+
+
 #Récupération des données
 data = read.csv('~/Documents/M2-Angers/temporel/BeerProd.csv', sep =';')
 attach(data)
 
+
+
+
 Months = data$Month
 # en 1995, n'a que les valeurs jusqu'au mois d'aout --> Que faire ?
 
+
+data_date<-data$Month
+data_date
+data_date1<-as.Date(paste(data_date,"-01",sep=""))
+data_date1
+data_date2<-as.Date(data_date1,"%Y-%m-%d")
+data_date2
+
 #Première visualisation des données
 plot(BeerProd, type='l')
+
+xts(BeerProd, order.by=as.Date(data_date2)) %>%
+  dygraph(main = "Production Bière") %>%
+  dyRangeSelector()
+
+xts(log(BeerProd), order.by=as.Date(data_date2)) %>%
+  dygraph(main = "Production Bière") %>%
+  dyRangeSelector()
+
+
+ts_cor(ts(BeerProd))
 
 ##Observations : tendance (linéaire ? quadratique ?, rupture ?)
 ##               périodicité 
@@ -22,6 +60,9 @@ plot(BeerProd, type='l')
 
 acf(BeerProd, lag.max = 40)
 pacf(BeerProd, lag.max = 40)
+acf(log(BeerProd), lag.max = 40)
+pacf(log(BeerProd), lag.max = 40)
+
 ##période de 12
 
 # BeerProd = ts(BeerProd, frequency = 12)
@@ -46,6 +87,8 @@ BeerProd_diff12d = diff(diff(BeerProd, 12)) # d=1, D=1
 plot(BeerProd_diff, type='l') #plus de tendance, plus trop de périodicité
 acf(as.numeric(BeerProd_diff)) #pics à 12 et 24 --> encore de la périodicité
 pacf(as.numeric(BeerProd_diff)) #partie AR importante
+
+
 
 adf.test(BeerProd_diff)
 kpss.test(BeerProd_diff)
@@ -77,10 +120,16 @@ adf.test(BeerProd_diff12d)
 kpss.test(BeerProd_diff12d)
 #Cette série semble stationnaire.
 
+
+par(mfrow=c(1,2))
+ts_cor(ts(BeerProd_diff))
+ts_cor(ts(BeerProd_diff12d))
+
 ##On part sur un modèle SARIMA avec d=0, D=1, éventuellement Q=1 et P=0
 auto.arima(ts(BeerProd, frequency = 12), d=0, D=1, ic='bic', allowdrift = T) #SARIMA (0,0,0)x(0,1,1)[12] 
 Mod0=Arima(BeerProd, order = c(0,0,0), seasonal = list(order=c(0,1,1), period =12))
-
+Mod0$bic
+Mod1$bic
 t_stat(Mod0)  # ok paramètre significatif
 plot(BeerProd, type='l',lwd = 1)
 lines(Mod0$fitted, col = 'red')
@@ -441,6 +490,8 @@ shapiro.test(ModL3_1$residuals) # pas gaussien
 
 ### Comparaison sur un critère prédictif
 
+n=length(BeerProd)
+print(n)
 BeerT = BeerProd[1:(n-12)]
 TpsT = Tps[1:(n-12)]
 Tps2T = TpsT^2
@@ -457,11 +508,29 @@ pred1T = forecast(Mod1T, h=12)$mean
 pred2T = forecast(Mod2T, h=12, xreg = cbind(NTps,NTps2))$mean
 pred3T = forecast(Mod3T, h=12)$mean
 
+
+All_preds=cbind(pred1T,pred2T,pred3T)
+dygraph(All_preds, main = "Predictions des 3 modèles") %>%
+  dyOptions(colors = RColorBrewer::brewer.pal(3, "Set2"))
+
+All_preds %>%               # TS object
+  autoplot(facets=FALSE) 
+
+
+
 BeerProd_DP = BeerProd[(n-11):n]
 plot(BeerProd_DP, type = 'l')
 lines(as.numeric(pred1T), type = 'l', col = 'red')
 lines(as.numeric(pred2T), type = 'l', col = 'blue')
 lines(as.numeric(pred3T), type = 'l', col = 'green')
+
+
+
+pred2T %>%               # TS object
+  autoplot(facets=FALSE)
+
+
+
 
 LBeerT = LBeerProd[1:(n-12)]
 XLT = XL[1:(nT-12)]
@@ -504,13 +573,38 @@ pred1 = forecast(Mod2, h=36, xreg=cbind(NTs,NTs2))
 predL2 = forecast(ModL3, h=36)
 pred2 = exp(predL2$mean)*corr
 
+Mod2_moyenne<-pred1$mean[1:36]
+Mod2_lower_bound<-pred1$lower[,2][1:36]
+Mod2_upper_bound<-pred1$upper[,2][1:36]
+pred1_IC<-ts(cbind(Mod2_moyenne,Mod2_lower_bound,Mod2_upper_bound))
+ModL3_exp<-predL2[1:36]
+pred2_1<-ts(cbind(pred1_IC,ModL3_exp))
+
+ModL3_moyenne<-predL2$mean[1:36]
+ModL3_lower_bound<-predL2$lower[,2][1:36]
+ModL3_upper_bound<-predL2$upper[,2][1:36]
+pred2_IC<-ts(cbind(ModL3_moyenne,ModL3_lower_bound,ModL3_upper_bound))
+
+
+
 plot(BeerProd, xlim=c(1,512), type='l')
 lines(NTs, pred1$mean, type = 'l', col='blue')
 lines(NTs, pred2, col='red')
+
+
 plot(1:36, pred1$lower[,2], type = 'l', col='cyan', ylim =c(100,220))
 lines(1:36, pred1$upper[,2], type = 'l', col='cyan')
 lines(1:36, exp(predL2$upper[,2]), col='orange')
 lines(1:36, exp(predL2$lower[,2]), col='orange')
+
+pred1_IC %>%  
+  #pred2_IC %>% 
+  autoplot(facets=FALSE) # avec intervalle de confiance
+
+
+
+
+
 
 ##Au vu de la taille des intervalles de prédiction, le modèle sans passage au log semble meilleur
 

@@ -108,38 +108,43 @@
 
 %===============================================================================
 
-L'objectif de cet étude est de prédire la production de bière en Australie pour les trois prochaines années à partir de séries chronologiques. La production de bière est une variable endogène car elle est dépendante de d'autres facteurs comme le climat. Nous nous basons sur des données mensuelles, de janvier 1956 à août 1995. Comme il est difficile de visuellement discerner le modèle multiplicatif de l'additif nous analysons à la fois le modèle initial et le modèle transformée. Notre approche de vise en premier lieu à transformer les données, à éliminer la périodicité et la tendance avant de rendre le processus stationnaire. Puis des tests statistiques sont effectués sur les résidus afin de cibler les modèles les plus robustes. Finalement, nous utilisons les modèles choisis afin de prédire la production de bière sur les trois prochaines années. 
-A COMPLETER/ MODIFIER...
+Dans le cadre de cette étude nous disposons de données de production mensuelle de bière en Australie (en gigalitre), de janvier 1956 à août 1995. L'objectif est de prédire la production de bière pour les trois années suivantes, c'est-à-dire du mois de septembre 1995 au mois de septembre 1998, en modélisant les données à l'aide de séries chronologiques.
+Dans un premier temps, nous analysons les données afin de déterminer une présence ou absence de tendance et de périodicité. Ensuite nous mettons en place plusieurs modèles qui nous semblent pertinents, et ce en se basant sur différentes caractéristiques des données. Enfin, nous comparons les performances de nos modèles sur un critère prédictif et ne gardons que les deux meilleurs. A partir de ces deux modèles, nous prédisons donc les valeurs pour les 36 mois suivants.
 
-
-\vspace{15 mm}
+\vspace{5 mm}
 
 %===============================================================================
 
 \noindent
-{\LARGE \textbf{Méthologie}}
-\vspace{5 mm}
+\section{Analyse des données et premières visualisations}
 
-
-\subsection{Analyse initiale}
+\subsection{Visualisation des données}
 
 Les séries chronologiques ont 3 composantes principales: La tendance (T), qui décrit les mouvement à long terme, la périodicité (S), qui est cyclique, et les fluctuations ($\epsilon$).
 \vspace{5 mm}
-Nous débutons notre approche en faisant une analyse visuelle des séries chronologiques. 
 
-À première vue nous voyons que nos séries sont non-stationnaire avec une tendance et une périodicité annuelle. Cette dernière est d'ailleurs confirmé sur les sorties ACF et PACF des séries initiales. Il est dur à dire si la tendance est quadratique ou linéaire. Nous nous baserons sur des tests supplémentaires pour être sûr.  De plus, nous remarquons un accroissement subtile de la saisonnalité, nous laissant un doute quant à la nature multiplicative ou additive du modèle. Nous avons ainsi décidé de comparer les résultats obtenus des séries initiales, avec les résultats du logarithme des séries. 
+La modélisation par séries chronologiques peut s'écrire comme suit : 
+$X_t = m_t + S_t + Z_t $
+où $X_t$ est la valeur de la série à l'instant t.
+mt est la tendance et représente l'évolution de la série sur le long terme.
+$S_t$ est la saisonnalité et représente l'évolution à court terme de la série. La saisonnalité traduit l'éventuelle périodicité des données.
+$Z_t$ est la partie non déterministe du processus et est donc qualifié de fluctuations. C'est le reste de l'information non expliquée par la tendance ou la saisonnalité.
+L'écriture de $X_t$ ci dessus suppose que le modèle est additif. Or, il est tout à fait possible qu'il y ait des phénomènes d'amplification, auquel cas un modèle additif n'est pas adapté. On lui préférera un modèle multiplicatif de la forme : $X_t = m_t*S_t*Z_t$.
 
-\begin{figure}[h]
+\vspace{10 mm}
+Figure 1 représente la série (à gauche) et le logarithme de la série (à droite). 
+Une première observation visuelle de la série met en évidence une tendance (linéaire ou quadratique) ainsi qu'une périodicité (annuelle). De plus, l'amplitude des dernières périodes semble bien plus grande que celles des premières, ce qui nous pousse à également considérer le logarithme de la série dans la suite de notre étude.
+
+\begin{figure}[h!]
+\centering
 	\begin{subfigure}{.5\textwidth}
-  		\centering
-    	\includegraphics[scale=0.2]{plot_beer}  
+    	\includegraphics[scale=0.4]{plot_beer}  
     	\caption{Série Initiale}
     	\label{fig:sub1}
     \end{subfigure}
-    \begin{subfigure}{.5\textwidth}
-    	\centering
-    	\includegraphics[scale=0.3]{Log_Series}  
-    	\caption{Série avec une transformation logarithme}
+    \begin{subfigure}{.4\textwidth}
+    	\includegraphics[scale=0.4]{Log_Series}  
+    	\caption{Série après passage au logarithme}
     	\label{fig:sub2}
     \end{subfigure}
 
@@ -151,56 +156,88 @@ Nous débutons notre approche en faisant une analyse visuelle des séries chrono
 
 
 \vspace{5 mm}
-\subsection{Élimination de la tendance et de la saisonnalité --MEILLEUR TITRE?}
+\subsection{Éliminer la stationnarité}
 
 \vspace{5 mm}
-À partir de ces deux modèles, nous commencons par faire une différenciation $(I-B)$, soit d=1. Les sorties ACF et PACF nous affiche des pics à 12, 24, et plus, nous poussant à faire une prochaine différenciation, $(I-B^{12})$, soit D=1. Nous prenons ainsi les cas de différenciation suivants:
+
+Nous travaillons donc maintenant en parallèle sur la série initiale et la série passée au logarithme.
+
+%\subsubsection{Différentiation locale $(d=1)$}
+
+La première étape pour déterminer un modèle est d'étudier la stationnarité de la série d'étude. Les tests ADF et KPSS, ainsi que l'observation visuelle de nos deux séries d'études montrent qu'elles ne sont clairement pas stationnaires.
+Nous différencions alors plusieurs fois nos séries et étudions les acf et pacf des nouvelles séries obtenues, ainsi que leur stationnarité. 
+À partir de ces deux modèles, nous commençons par faire une différenciation $(I-B)$, soit d=1. Les sorties ACF et PACF nous affiche des pics à 12, 24, et plus, nous poussant à considérer d'autres différentiations, et notamment des différentiations saisonnières, $(I-B^{12})$, soit D=1. Nous prenons ainsi les cas de différentiations suivants:
 \begin{description}
   \item 1. d=0, D=1
   \item 2. d=1, D=1
 \end{description}
 \noindent 
-Pour le premier cas, la série est non-stationnaire, tandis que lorsque nous prenons d=1 et D=1, nous obtenons une série stationnaire, un résultat qui est vu à la fois via les sorties ACF, PACF et à la fois grâce aux tests ADF et KPSS. Nous établirons nos prochains modèles à partir de $Y_t$ (cas non-transformé) et $YL_t$ (cas transformé)
+
+\begin{figure}[h!]
+\centering
+	\begin{subfigure}{.4\textwidth}
+    	\includegraphics[scale=0.4]{d1D0}  
+    	\caption{Une différentiation locale, $d=1$}
+    	\label{fig:sub1}
+    \end{subfigure}
+    \begin{subfigure}{.4\textwidth}
+    	\includegraphics[scale=0.4]{d1D1}  
+    	\caption{Une différentiation locale et saisonnière, $d=1, D=1$}
+    	\label{fig:sub2}
+    \end{subfigure}
+
+\caption{ACF et PACF après une différentiation locale, $d=1$}
+\label{fig:1}
+   
+\end{figure}
+
+
+
+
+Pour le premier cas, la série est non-stationnaire, tandis que lorsque nous prenons d=1 et D=1, nous obtenons une série stationnaire, un résultat qui est vu à la fois via les tests ADF et KPSS. 
 
 \noindent 
-Soit $(X_t)_{t\in \mathbb{Z}}$ le processus initial
-\begin{align*}
-Y_t &= (I-B) * (1-B^{12}) * X_t \\ 
-YL_t &= (I-B) * (1-B^{12}) * log(X_t)
-\end{align*}
-
+Dans la suite on note $(X_t)_{t\in \mathbb{Z}}$ le processus initial, et $(XL_t)_{t\in \mathbb{Z}}$  le série transformée.
 
 
 \vspace{5 mm}
-\subsection{Création de modèles}
+\section{Création de modèles}
 
 \vspace{5 mm}
-\subsubsection{Série Initial, $Y_t$)}
+\subsubsection{Série Initial, $X_t$}
 
-Nous utilisons 3 approches pour modéliser notre processus $Y_t$.
+Nous nous focalisons en premier lieu sur la série non transformée $X_t$, puisque les approches mentionnées ci-dessous seront identiques pour la série $XL_t$.
 
-La première est une approche standard, qui permet de déterminer les p, q et P, Q qui minimiseraient le BIC. En effet, grâce à la fonction auto.arima de R nous obtenons en premier lieu SARIMA (0,1,3) X (0,1,2)[12]. Cela veut dire que notre modèle est de la forme suivante:
-\begin{align*}
-\theta ....ECRIRE LE MODELE
-\end{align*}
+Nous utilisons 3 approches pour modéliser notre processus $X_t$:
 
-Puis nous tentons de développer un autre modèle potentiel. Comme notre série semble avoir une tendance quadratique, de part sa forme concave, nous considérons une nouvelle approche qui pourrait traiter la possibilité d'endogénéité de la variable production de bière. Ainsi nous supposons que la variable pourrait être dépendante de d'autres facteurs tel que le climat. Nous créons alors le modèle SARIMAX qui est de la forme suivante:
-\begin{align*}
-\theta ....ECRIRE LE MODELE
-\end{align*}
 
-La dernière approche utilisée dans cet étude est la recherche du point de rupture. 
+\begin{description}
+  \item a) Dans un premier temps, nous considérons que la tendance observée sur la série $X_t$ est linéaire. Nous cherchons donc grâce à la fonction auto.arima du package tseries de Rstudio les ordres p,q,P,Q optimaux, c'est à dire ceux permettant la minimisation du BIC. (On impose d=1 et D=1 ici)
+Nous obtenons donc un premier modèle avec p=0, q=3, P=0, Q=2. On a donc : 
+$X_t \sim SARIMA(0,1,3)(0,1,2)_{12}$
+  \item b) Dans un deuxième temps, nous essayons d'affiner ce modèle en ne considérant non plus que la tendance est linéaire mais quadratique. En effet, le début de la série est bien linéaire mais à partir d'un moment, on ne peut plus dire que ça croit, ça aurait même tendance à décroitre. Pour prendre en compte cette tendance quadratique, nous décidons donc d'effectuer une régression quadratique de $X_t$ et de modéliser les résidus de cette régression par un SARIMA, toujours à l'aide de la fonction auto.arima.
+  
+  \item c) Enfin, au lieu de considérer que la tendance est quadratique, nous considérons qu'il y a peut-être une rupture de la tendance à un certain moment et essayons donc de repérer cet éventuel point de rupture pour diviser la série en deux et ne travailler que sur la deuxième partie de la série. En effet, un évènement à pu modifier la tendance et donc prendre en compte la première partie des données risquerait de biaiser les prédictions.
+
+\end{description}
+\noindent 
+
+\vspace{5 mm}
+Nous déterminons par étude de l'erreur MSE que le point de rupture ce trouve à l'abscisse 213. Une fois la série séparée en deux, nous ne considérons donc plus que la partie droite et modélisons cette série par un SARIMA grâce à la fonction auto.arima
+Nous obtenons les ordres suivant : $p=0,d=0,q=0,P=1,D=1,Q=1$ 
+donc $X2_t \sim SARIMA(0,0,0)(1,1,1)_{12}$
+
 \begin{figure}[h]
 	\begin{subfigure}{.5\textwidth}
   		\centering
     	\includegraphics[scale=0.2]{rupture1}  
-    	\caption{Partie à gauche de la rupture}
+    	\caption{Partie à gauche de la rupture, Série $X_1$}
     	\label{fig:sub1}
     \end{subfigure}
     \begin{subfigure}{.5\textwidth}
     	\centering
     	\includegraphics[scale=0.2]{rupture2}  
-    	\caption{Partie à droite de la rupture}
+    	\caption{Partie à droite de la rupture, Série $X_2$}
     	\label{fig:sub2}
     \end{subfigure}
 
@@ -209,23 +246,21 @@ La dernière approche utilisée dans cet étude est la recherche du point de rup
    
 \end{figure}
 
-Tout comme pour la deuxième approche nous choisissons cette méthode à cause de la tendance de la série. Nous voyons en effet, un point de rupture possible autour de 1970. Le modèle choisit par auto.arima est :
-\begin{align*}
-\theta ....ECRIRE LE MODELE
-\end{align*}
 
-Avant d'aller plus loin dans la comparaison des modèles, il est important de valider la qualité des résidus des modèles créés. Or, nous remarquons que bien qu'auto.arima ait sélectionné les modèles qui minimise le BIC, il ne semble pas considérer la qualité des résidus. En effet, le test de Box Jenkins nous montre que les résidus ne sont pas bruits blancs et qu'au final les modèles ne sont pas adaptés à faire les prévisions. Afin de palier à ce problème nous cherchons alors à augmenter manuellement les valeurs de p, q ainsi P et Q ce qui nous donnerait plus de flexibilité dans le modèle mais qui augmenterait le risque de paramètres non significatifs. Ainsi, pour chaque modèle créé nous effectuons un test statistique de student sur chaque coefficient. Dans chaque cas où les coefficients les plus (ELEVER-- A VALIDER QUEL TERME METTRE) sont non significatifs, une variante du modèle, ne possédant aucune variable significative est créée. Le BIC de cette dernière est comparé à celui du modèle possédant les paramètres non significatifs. Nous nous retrouvons avec les modèles suivants:
+Avant d'aller plus loin dans la comparaison des modèles, il est important de valider la qualité des résidus des modèles créés. Or, nous remarquons que bien qu'auto.arima ait sélectionné les modèles minimisant le BIC, elle ne semble pas considérer la qualité des résidus. En effet, le test de Box Jenkins nous montre qu'aucun des résidus ne peuvent être considérés blancs et les ACF et PACF présentent encore beaucoup de pics significatifs. Il reste donc encore beaucoup d'information à aller chercher. Afin de palier à ce problème nous cherchons alors à augmenter manuellement les valeurs de p, q ainsi P et Q au risque d'avoir des paramètres non significatifs. Ainsi, pour chaque modèle créé nous effectuons un test statistique de student sur chaque coefficient. Dans chaque cas où les coefficients les plus (élevé?-- A VALIDER QUEL TERME METTRE) sont non significatifs, une variante du modèle, ne possédant aucune variable significative est créée. Le BIC de cette dernière est comparé à celui du modèle possédant les paramètres non significatifs. Nous obtenons avec les modèles suivants:
+
+METTRE PHOTOS CHECK UP RES du modèle avec meilleur résultat pour log et non-log
 
 \begin{table}[h!]
   \begin{center}
-    \caption{Modèles choisis}
+    \caption{Modèles retenus}
     \label{tab:table1}
     \begin{tabular}{l|c|r} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
       \ & \textbf{Modèles} & \textbf{Equations}\\
       \hline
-      A & SARIMA $(4,1,4)(0,1,1)_{12}$ & $\alpha$ - à compléter\\
-      B & SARIMAX $(4,0,4)(0,1,1)_{12}$& $\beta$ - à compléter\\
-      C & SARIMA avec rupture $(4,1,3)(0,1,1)_{12}$ & $\gamma$ - à compléter\\
+      1 & SARIMA $(4,1,4)(0,1,1)_{12}$ & $\alpha$ - à compléter\\
+      2 & SARIMA $(4,0,4)(0,1,1)_{12}$& $\beta$ - à compléter\\
+      3 & SARIMA avec rupture $(4,1,3)(0,1,1)_{12}$ & $\gamma$ - à compléter\\
     \end{tabular}
   \end{center}
 \end{table}
@@ -235,7 +270,24 @@ Avant d'aller plus loin dans la comparaison des modèles, il est important de va
 \vspace{5 mm}
 \subsubsection{Série avec transformation logarithmique, $YL_t$)}
 
-Nous procédons de la même façon avec le modèle logarithmique. Tout comme pour la série initiale, en faisant une différenciation, $(I-B)$ et en faisant une différenciation saisonnière $(I-B^{12})$, nous obtenons une modèle stationnaire. Le test ADF et KPSS confirme ce résultat tout comme les sorties ACF et PACF (qui nous n'affiche plus de pics cycliques). 
+Nous procédons de la même façon avec le modèle logarithmique.
+
+Nous obtenons par les 3 mêmes approches et après ajustement des paramètres les modèles suivants : 
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Modèles retenus}
+    \label{tab:table1}
+    \begin{tabular}{l|c|r} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
+      \ & \textbf{Modèles} & \textbf{Equations}\\
+      \hline
+      L1 & SARIMA $(3,1,4)(0,1,1)_{12}$ & $\alpha$ - à compléter\\
+      L2& SARIMA xreg $(4,0,4)(0,1,1)_{12}$& $\beta$ - à compléter\\
+      L3 & SARIMA avec rupture $(4,0,4)(0,1,1)_{12}$ & $\gamma$ - à compléter\\
+    \end{tabular}
+  \end{center}
+\end{table}
+
 
 \begin{figure}[h]
  \centering
@@ -244,78 +296,99 @@ Nous procédons de la même façon avec le modèle logarithmique. Tout comme pou
 \label{fig:1}
 \end{figure}
 
-Dans la Figure 2, nous remarquons que la variance n'est pas tout à fait constante. En effet, elle est plus élevée autours des périodes 20 et 30. 
+
 
 \vspace{5 mm}
-\subsection{Analyses des résidus}
-Avant de faire des prédictions avec nos modèles nous cherchons à analyser les résidus. Pour cela nous allons faire à la fois une analyse visuelle et une analyse en se basant sur les tests statistiques afin de voir si nos résidus sont bien des bruits blanc et s'ils sont gaussiens.
+\subsection{Comparaison des modèles et prédictions}
 
-\subsubsection{Modèle Initial, $Y_t$}
+\subsubsection{Meilleurs modèles}
 
-METTRE PHOTOS CHECK UP RES du modèle avec meilleur résultat
+Pour chaque série, nous comparons les 3 modèles obtenus sur la base d'un critère prédictif. Nous prédisons à nouveau la dernière période de la série à l'aide des modèles tronqués et calculons l'erreur MSE pour chaque modèle (carré des écarts). Nous gardons le modèle qui minimise la MSE.
+Les modèles retenues (Tables 2 et 3) sont donc les suivants : 
 
-\subsubsection{Modèle logarithme, $YL_t$}
-
-METTRE PHOTOS CHECK UP RES du modèle avec meilleur résultat
-
-\vspace{5 mm}
-\subsection{Prédictions}
-
-Nous cherchons maintenant à analyser la performance prédictive des modèles sur 1 an ATTENTION PREDICTION 3 ANS demandé dans le mail?. Pour le faire, une période, équivalente à 12 mois, est enlevée à partir d'août 1995. Les résultats ainsi prédits seront comparés avec les observations en utilisant le MSE, l'erreur moyenne au carré. Le modèle ayant le plus petit MSE sera le modèle sélectionné dans chacun des cas (avec et sans transformation logarithme). 
-
-
-\subsubsection{Modèle Initial, $Y_t$}
-
-Figure 4 nous affiche à la fois les prédictions des 12 derniers mois et les vrais valeurs (en noir). Nous remarquons que les 3 modèles donnent visuellement des résultats assez proche des vrais observations. Nous confirmons cela à l'aide des MSE calculés (Table 2). Nous pouvoir établir que le modèle 
-
-\begin{figure}[h]
-  		\centering
-    	\includegraphics[scale=0.4]{Prediction_Initial}  
-\caption{Prédictions des 12 derniers mois et comparaison avec les vrai valeurs à partir de la série non-transformée}
-\label{fig:1}
-\end{figure}
+\textbf{Série $X_t$ : Modèle 2: SARIMA$(4,0,4)(0,1,1)_{12}$}
 
 \begin{table}[h!]
   \begin{center}
-    \caption{MSE}
+    \caption{MSE à partir de la série initiale}
     \label{tab:table1}
     \begin{tabular}{l|c|r} 
       \ & \textbf{Modèles} & \textbf{MSE}\\
       \hline
-      A & SARIMA $(4,1,4)(0,1,1)_{12}$ & 69.82345\\
+      1 & SARIMA $(4,1,4)(0,1,1)_{12}$ & 69.82345\\
       \rowcolor{LightCyan}
-      B & SARIMAX $(4,0,4)(0,1,1)_{12}$& \textbf{66.83503}\\
-      C & SARIMA avec rupture $(4,1,3)(0,1,1)_{12}$ & 77.87975\\
+      2 & SARIMA $(4,0,4)(0,1,1)_{12}$& \textbf{66.83503}\\
+      3 & SARIMA avec rupture $(4,1,3)(0,1,1)_{12}$ & 77.87975\\
     \end{tabular}
   \end{center}
 \end{table}
 
-
-\subsubsection{Modèle logarithme, $YL_t$}
-Les résultats obtenus à partir des logarithmes de la séries sont affichés dans la figure 5. 
-\begin{figure}[h]
-  		\centering
-    	\includegraphics[scale=0.4]{Prediction_Log}  
-\caption{Prédictions des 12 derniers mois et comparaison avec les vrai valeurs à partir de la série transformée}
-\label{fig:1}
-\end{figure}
+\textbf{Série $XL_t$ : Modèle L3 : SARIMA -  A AJOUTER}
 
 \begin{table}[h!]
   \begin{center}
-    \caption{MSE}
+    \caption{MSE à partir de la série transformée}
     \label{tab:table1}
     \begin{tabular}{l|c|r} 
       \ & \textbf{Modèles} & \textbf{MSE}\\
       \hline
-      D & SARIMA A AJOUTER & 0.003685328\\
-      E & SARIMAX A AJOUTER & 0.003874816\\
+      L1 & SARIMA $(3,1,4)(0,1,1)_{12}$ & 0.003685328\\
+      L2 & SARIMA xreg $(4,0,4)(0,1,1)_{12}$& 0.003874816\\
       \rowcolor{LightCyan}
-      F & SARIMA avec rupture A AJOUTER & \textbf{0.003226944}\\
+      L3 & SARIMA avec rupture $(4,0,4)(0,1,1)_{12}$& \textbf{0.003226944}\\
     \end{tabular}
   \end{center}
 \end{table}
+
+Les graphiques ci-dessous montrent les prédictions des deux modèles retenus sur 3 ans. À droite, nous voyons la prédiction du modèle L3, et à gauche celle du modèle 2 (en comparaison avec l'exponentiel du la prédiction de L3).
+
+JE NARRIVE PAS À FAIRE AFFICHER LES GRAPHIQUE PREDICTION - VOICI CE QUE JE SORS : 
+
+
+\begin{figure}[h]
+	\begin{subfigure}{.5\textwidth}
+  		\centering
+    	\includegraphics[scale=0.4]{Pred1}  
+    	\caption{Modèle 2 avec intervalle de confiance}
+    	\label{fig:sub1}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\includegraphics[scale=0.4]{PredL2}  
+    	\caption{Modèle L3}
+    	\label{fig:sub2}
+    \end{subfigure}
+
+\caption{Prédiction sur 3 ans}
+\label{fig:1}
+   
+\end{figure}
+
+
+
+\begin{figure}[h]
+	\begin{subfigure}{.5\textwidth}
+  		\centering
+    	\includegraphics[scale=0.4]{Mod2}  
+    	\caption{Modèle 2 avec intervalle de confiance}
+    	\label{fig:sub1}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\includegraphics[scale=0.4]{ModL3}  
+    	\caption{Modèle L3 avec intervalle de confiance}
+    	\label{fig:sub2}
+    \end{subfigure}
+
+\caption{Prédiction sur 3 ans}
+\label{fig:1}
+   
+\end{figure}
 
 \vspace{5 mm}
 \subsection{Conclusion}
+
+Le modèle retenu, soit celui avec le meilleur critère prédictif, est le modèle 2.
+
 
 \end{document}
