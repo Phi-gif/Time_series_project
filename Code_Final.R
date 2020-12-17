@@ -5,6 +5,7 @@ library(tseries)
 library(TSA)
 library(dplyr)
 library(dygraphs)
+library(xts)
 
 
 
@@ -15,6 +16,14 @@ attach(data)
 
 # ----------- Première visualisation des données  -----------------
 plot(BeerProd, type='l')
+
+# Transformation de données
+data_date<-data$Month
+data_date
+data_date1<-as.Date(paste(data_date,"-01",sep=""))
+data_date1
+data_date2<-as.Date(data_date1,"%Y-%m-%d")
+data_date2
 
 # Plot de la série initiale
 xts(BeerProd, order.by=as.Date(data_date2)) %>%
