@@ -161,8 +161,8 @@ Nous travaillons donc maintenant en parallèle sur la série initiale et la sér
 La première étape pour déterminer un modèle est d'étudier la stationnarité de la série. Les tests ADF et KPSS, ainsi que l'observation visuelle des deux séries considérées montrent qu'elles ne sont clairement pas stationnaires.
 Nous différencions alors plusieurs fois les séries jusqu'à obtention de la stationnarité.
 
-Nous commençons par faire une différenciation locale sur les 2 séries (soit d=1). Les sorties ACF et PACF affichent des pics à 12, 24, et plus, nous poussant à considérer d'autres différentiations, et notamment des différentiations saisonnières (soit D=1).\\
-Nous prenons ainsi les cas de différentiations suivants:
+Nous commençons par faire une différenciation locale sur les 2 séries (soit d=1). Les sorties ACF et PACF affichent des pics à 12, 24, et plus, nous poussant à considérer d'autres différenciations, et notamment des différenciations saisonnières (soit D=1).\\
+Nous prenons ainsi les cas de différenciations suivants:
 \begin{description}
   \item 1. d=0, D=1
   \item 2. d=1, D=1
@@ -172,16 +172,16 @@ Nous prenons ainsi les cas de différentiations suivants:
 \centering
 	\begin{subfigure}{.4\textwidth}
     	\includegraphics[width=\textwidth]{d1D0}  
-    	\caption{Différentiation locale, $d=1$}
+    	\caption{Différenciation locale, $d=1$}
     	\label{fig:sub1}
     \end{subfigure}
     \begin{subfigure}{.4\textwidth}
     	\includegraphics[width=\textwidth]{d1D1}  
-    	\caption{Différentiation locale et saisonnière, $d=1, D=1$}
+    	\caption{Différenciation locale et saisonnière, $d=1, D=1$}
     	\label{fig:sub2}
     \end{subfigure}
 
-\caption{ACF et PACF après différentiations, $d=1$}
+\caption{ACF et PACF après différenciations, $d=1$}
 \label{fig:2}
    
 \end{figure}
