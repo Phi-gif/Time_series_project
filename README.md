@@ -6,4 +6,6 @@ Includes ale and stout.
 
 Does not include beverages with alcohol percentage less than 1.15.
 
-Goal : model the signal using time series and predict the beer production in Australia for the years 1996 to 1998 (36 months)
+Goal : Model the signal using time series and predict the beer production in Australia for the years 1996 to 1998 (36 months)
+
+Software : R
